@@ -12,7 +12,7 @@ SOURCES += \
     main.cpp \
     src/model/Target.cpp \
     src/model/RadarModel.cpp \
-    src/controller/RadarController.cpp
+    src/controller/Rc.cpp
 
 HEADERS += \
     src/model/Target.h \

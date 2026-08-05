@@ -1,5 +1,5 @@
-#ifndef TARGET_H
-#define TARGET_H
+#ifndef T_H
+#define T_H
 
 #include <QObject>
 #include <cmath>
@@ -31,4 +31,4 @@ private:
     double m_range;
 };
 
-#endif // TARGET_H
+#endif 

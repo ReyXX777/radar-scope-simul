@@ -1,4 +1,4 @@
-#include "RadarController.h"
+#include "Rc.h"
 #include <QtMath>
 
 RadarController::RadarController(QObject *parent) : QObject(parent) {

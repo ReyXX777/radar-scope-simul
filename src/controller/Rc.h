@@ -1,5 +1,5 @@
-#ifndef RADARCONTROLLER_H
-#define RADARCONTROLLER_H
+#ifndef Rc_H
+#define Rc_H
 
 #include <QObject>
 #include <QTimer>
@@ -24,4 +24,4 @@ private:
     double m_rpm = 24.0; // 24 RPM = standard marine radar
 };
 
-#endif // RADARCONTROLLER_H
+#endif 
