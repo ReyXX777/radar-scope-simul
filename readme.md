@@ -1,4 +1,9 @@
-# RadarScopeSimulation
+
+
+https://github.com/user-attachments/assets/6eb97ca4-8857-49c0-b7e8-f34ef66a449e
+
+
+# Radar Scope 
 
 PPI radar scope  built with Qt/C++/QML
 
