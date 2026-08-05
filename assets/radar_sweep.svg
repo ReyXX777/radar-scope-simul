@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+<defs>
+  <linearGradient id="sweep-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="objectBoundingBox">
+    <stop offset="0%" stop-color="#33ff33" stop-opacity="0.9"/>
+    <stop offset="100%" stop-color="#33ff33" stop-opacity="0"/>
+  </linearGradient>
+</defs>
+<g id="sweep-wedge">
+  <path d="M 500 500 L 500.00 20.00 A 480 480 0 0 1 624.23 36.36 Z" fill="url(#sweep-gradient)" stroke="none"/>
+  <line x1="500" y1="500" x2="500.00" y2="20.00" stroke="#33ff33" stroke-width="3" stroke-linecap="round"/>
+</g>
+</svg>
