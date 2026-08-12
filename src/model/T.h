@@ -2,7 +2,6 @@
 #define T_H
 
 #include <QObject>
-#include <cmath>
 
 class Target : public QObject {
     Q_OBJECT
@@ -13,22 +12,22 @@ class Target : public QObject {
 public:
     explicit Target(int id, double bearing, double range, QObject *parent = nullptr);
 
-    double bearing() const { return m_bearing; }
+    double bearing() const;
     void setBearing(double b);
 
-    double range() const { return m_range; }
+    double range() const;
     void setRange(double r);
 
-    int id() const { return m_id; }
+    int id() const;
 
 signals:
     void bearingChanged();
     void rangeChanged();
 
 private:
-    int m_id;
-    double m_bearing;
-    double m_range;
+    int m_id{0};
+    double m_bearing{0.0};
+    double m_range{0.0};
 };
 
-#endif 
+#endif
