@@ -1,9 +1,19 @@
 #include "Rc.h"
-#include <QtMath>
 
-RadarController::RadarController(QObject *parent) : QObject(parent) {
+#include <cmath>
+
+namespace {
+    constexpr int kTimerIntervalMs{16};
+    constexpr double kSecToMs{1000.0};
+    constexpr double kDegPerRpmSec{6.0};
+}
+
+RadarController::RadarController(QObject *parent)
+    : QObject{parent}
+    , m_timer{}
+    , m_elapsed{} {
     connect(&m_timer, &QTimer::timeout, this, &RadarController::onTick);
-    m_timer.setInterval(16); // ~60fps
+    m_timer.setInterval(kTimerIntervalMs);
 }
 
 void RadarController::setModel(RadarModel *model) {
@@ -17,20 +27,34 @@ void RadarController::start() {
 }
 
 void RadarController::onTick() {
-    if (!m_model) return;
+    if (!m_model) {
+        return;
+    }
 
-    double dt = m_elapsed.restart() / 1000.0;
-    double degreesPerSecond = m_rpm * 360.0 / 60.0;
-    double newAngle = m_model->sweepAngle() + degreesPerSecond * dt;
+    const double dt{static_cast<double>(m_elapsed.restart()) / kSecToMs};
+    const double degreesPerSecond{m_rpm * kDegPerRpmSec};
+    const double newAngle{m_model->sweepAngle() + (degreesPerSecond * dt)};
     m_model->setSweepAngle(newAngle);
 
-    // FIXED: Iterate over targetList() instead of QQmlListProperty
-    double prevAngle = newAngle - degreesPerSecond * dt;
-    for (auto *target : m_model->rawTargetList()) {
-        double tb = target->bearing();
-        bool crossed = false;
-        if (prevAngle <= tb && newAngle > tb) crossed = true;
-        if (prevAngle > newAngle && (tb >= prevAngle || tb <= newAngle)) crossed = true;
-        if (crossed) emit m_model->targetPing(target->id());
+    const double prevAngle{newAngle - (degreesPerSecond * dt)};
+
+    for (const auto *target : m_model->rawTargetList()) {
+        if (!target) {
+            continue;
+        }
+
+        const double tb{target->bearing()};
+        bool crossed{false};
+
+        if (prevAngle <= tb && newAngle > tb) {
+            crossed = true;
+        }
+        if (prevAngle > newAngle && (tb >= prevAngle || tb <= newAngle)) {
+            crossed = true;
+        }
+
+        if (crossed) {
+            emit m_model->targetPing(target->id());
+        }
     }
 }
