@@ -1,6 +1,9 @@
 #include "Rm.h"
 
+#include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <limits>
 
 RadarModel::RadarModel(QObject *parent)
     : QObject{parent} {}
@@ -10,7 +13,7 @@ double RadarModel::sweepAngle() const {
 }
 
 void RadarModel::setSweepAngle(double angle) {
-    if (std::isnan(angle)) {
+    if (std::isnan(angle) || std::isinf(angle)) {
         return;
     }
     angle = std::fmod(angle, 360.0);
@@ -62,15 +65,22 @@ int RadarModel::targetCount(QQmlListProperty<Target> *list) {
         return 0;
     }
     const auto *model{qobject_cast<const RadarModel *>(list->object)};
-    return model ? static_cast<int>(model->m_targets.size()) : 0;
+    if (!model) {
+        return 0;
+    }
+    const auto size{model->m_targets.size()};
+    if (size > static_cast<decltype(size)>(std::numeric_limits<int>::max())) {
+        return std::numeric_limits<int>::max();
+    }
+    return static_cast<int>(size);
 }
 
 Target *RadarModel::targetAt(QQmlListProperty<Target> *list, int index) {
-    if (!list) {
+    if (!list || index < 0) {
         return nullptr;
     }
     auto *model{qobject_cast<RadarModel *>(list->object)};
-    if (model && index >= 0 && index < static_cast<int>(model->m_targets.size())) {
+    if (model && static_cast<std::size_t>(index) < static_cast<std::size_t>(model->m_targets.size())) {
         return model->m_targets.at(index);
     }
     return nullptr;
@@ -78,7 +88,12 @@ Target *RadarModel::targetAt(QQmlListProperty<Target> *list, int index) {
 
 QVariantList RadarModel::targetList() const {
     QVariantList list{};
-    list.reserve(m_targets.size());
+    const auto size{m_targets.size()};
+    if (size > static_cast<decltype(size)>(std::numeric_limits<int>::max())) {
+        list.reserve(std::numeric_limits<int>::max());
+    } else {
+        list.reserve(static_cast<int>(size));
+    }
     for (auto *target : m_targets) {
         list.append(QVariant::fromValue(target));
     }
