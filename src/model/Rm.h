@@ -37,7 +37,7 @@ private:
     static int targetCount(QQmlListProperty<Target> *list);
     static Target *targetAt(QQmlListProperty<Target> *list, int index);
 
-    double m_sweepAngle{0.0};
+    double m_sweepAngle{0.0e0};
     QList<Target*> m_targets{};
 };
 
