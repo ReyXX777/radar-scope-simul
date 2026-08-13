@@ -26,9 +26,9 @@ signals:
     void rangeChanged();
 
 private:
-    std::int32_t m_id{0};
-    double m_bearing{0.0};
-    double m_range{0.0};
+    std::int32_t m_id{static_cast<std::int32_t>(0.0e0)};
+    double m_bearing{0.0e0};
+    double m_range{0.0e0};
 };
 
 #endif
