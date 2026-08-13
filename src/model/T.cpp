@@ -2,8 +2,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 
-Target::Target(int id, double bearing, double range, QObject *parent)
+Target::Target(std::int32_t id, double bearing, double range, QObject *parent)
     : QObject{parent}
     , m_id{id}
     , m_bearing{bearing}
@@ -14,7 +15,7 @@ double Target::bearing() const {
 }
 
 void Target::setBearing(double b) {
-    if (std::isnan(b)) {
+    if (std::isnan(b) || std::isinf(b)) {
         return;
     }
     b = std::fmod(b, 360.0);
@@ -33,7 +34,7 @@ double Target::range() const {
 }
 
 void Target::setRange(double r) {
-    if (std::isnan(r)) {
+    if (std::isnan(r) || std::isinf(r)) {
         return;
     }
     const double clamped{std::clamp(r, 0.0, 1.0)};
@@ -44,6 +45,6 @@ void Target::setRange(double r) {
     emit rangeChanged();
 }
 
-int Target::id() const {
+std::int32_t Target::id() const {
     return m_id;
 }
