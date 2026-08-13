@@ -1,9 +1,10 @@
 #include "Rc.h"
 
 #include <cmath>
+#include <cstdint>
 
 namespace {
-    constexpr int kTimerIntervalMs{16};
+    constexpr std::int32_t kTimerIntervalMs{16};
     constexpr double kSecToMs{1000.0};
     constexpr double kDegPerRpmSec{6.0};
 }
@@ -31,7 +32,8 @@ void RadarController::onTick() {
         return;
     }
 
-    const double dt{static_cast<double>(m_elapsed.restart()) / kSecToMs};
+    const std::int64_t elapsedMs{m_elapsed.restart()};
+    const double dt{static_cast<double>(elapsedMs) / kSecToMs};
     const double degreesPerSecond{m_rpm * kDegPerRpmSec};
     const double newAngle{m_model->sweepAngle() + (degreesPerSecond * dt)};
     m_model->setSweepAngle(newAngle);
@@ -54,7 +56,8 @@ void RadarController::onTick() {
         }
 
         if (crossed) {
-            emit m_model->targetPing(target->id());
+            const std::int32_t targetId{static_cast<std::int32_t>(target->id())};
+            emit m_model->targetPing(targetId);
         }
     }
 }
