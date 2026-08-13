@@ -4,9 +4,9 @@
 #include <cstdint>
 
 namespace {
-    constexpr std::int32_t kTimerIntervalMs{16};
-    constexpr double kSecToMs{1000.0};
-    constexpr double kDegPerRpmSec{6.0};
+    constexpr std::int32_t kTimerIntervalMs{static_cast<std::int32_t>(1.6e1)};
+    constexpr double kSecToMs{1.0e3};
+    constexpr double kDegPerRpmSec{6.0e0};
 }
 
 RadarController::RadarController(QObject *parent)
@@ -23,7 +23,7 @@ void RadarController::setModel(RadarModel *model) {
 
 void RadarController::start() {
     m_elapsed.start();
-    m_lastTime = 0.0;
+    m_lastTime = 0.0e0;
     m_timer.start();
 }
 
