@@ -21,8 +21,8 @@ private:
     RadarModel *m_model{nullptr};
     QTimer m_timer{};
     QElapsedTimer m_elapsed{};
-    double m_lastTime{0.0};
-    double m_rpm{24.0};
+    double m_lastTime{0.0e0};
+    double m_rpm{2.4e1};
 };
 
 #endif
