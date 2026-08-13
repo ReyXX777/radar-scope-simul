@@ -1,6 +1,7 @@
 #ifndef RADARMODEL_H
 #define RADARMODEL_H
 
+#include <cstdint>
 #include <QList>
 #include <QObject>
 #include <QQmlListProperty>
@@ -28,7 +29,7 @@ public:
 
 signals:
     void sweepAngleChanged();
-    void targetPing(int targetId);
+    void targetPing(std::int32_t targetId);
     void targetsChanged();
 
 private:
