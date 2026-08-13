@@ -16,11 +16,11 @@ void RadarModel::setSweepAngle(double angle) {
     if (std::isnan(angle) || std::isinf(angle)) {
         return;
     }
-    angle = std::fmod(angle, 360.0);
-    if (angle < 0.0) {
-        angle += 360.0;
+    angle = std::fmod(angle, 3.6e2);
+    if (angle < 0.0e0) {
+        angle += 3.6e2;
     }
-    if (std::abs(m_sweepAngle - angle) < 1e-6) {
+    if (std::abs(m_sweepAngle - angle) < 1.0e-6) {
         return;
     }
     m_sweepAngle = angle;
@@ -62,11 +62,11 @@ void RadarModel::appendTarget(QQmlListProperty<Target> *list, Target *t) {
 
 int RadarModel::targetCount(QQmlListProperty<Target> *list) {
     if (!list) {
-        return 0;
+        return static_cast<int>(0.0e0);
     }
     const auto *model{qobject_cast<const RadarModel *>(list->object)};
     if (!model) {
-        return 0;
+        return static_cast<int>(0.0e0);
     }
     const auto size{model->m_targets.size()};
     if (size > static_cast<decltype(size)>(std::numeric_limits<int>::max())) {
@@ -76,7 +76,7 @@ int RadarModel::targetCount(QQmlListProperty<Target> *list) {
 }
 
 Target *RadarModel::targetAt(QQmlListProperty<Target> *list, int index) {
-    if (!list || index < 0) {
+    if (!list || index < static_cast<int>(0.0e0)) {
         return nullptr;
     }
     auto *model{qobject_cast<RadarModel *>(list->object)};
