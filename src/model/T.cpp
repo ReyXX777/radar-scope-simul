@@ -1,31 +1,40 @@
-#include "Target.h"
+#include "T.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 
-Target::Target(std::int32_t id, double bearing, double range, QObject *parent)
-    : QObject{parent}
-    , m_id{id}
-    , m_bearing{bearing}
-    , m_range{range} {}
+namespace model {
+
+namespace {
+    constexpr double g_fullCircleDegrees{3.6e2};
+    constexpr double g_epsilon{1.0e-6};
+    constexpr double g_minRange{0.0e0};
+    constexpr double g_maxRange{1.0e0};
+}
+
+Target::Target(::std::int32_t l_id, double l_bearing, double l_range, ::QObject *l_parent)
+    : ::QObject{l_parent}
+    , m_id{l_id}
+    , m_bearing{l_bearing}
+    , m_range{l_range} {}
 
 double Target::bearing() const {
     return m_bearing;
 }
 
-void Target::setBearing(double b) {
-    if (std::isnan(b) || std::isinf(b)) {
+void Target::setBearing(double l_b) {
+    if (::std::isnan(l_b) || ::std::isinf(l_b)) {
         return;
     }
-    b = std::fmod(b, 3.6e2);
-    if (b < 0.0e0) {
-        b += 3.6e2;
+    l_b = ::std::fmod(l_b, g_fullCircleDegrees);
+    if (l_b < 0.0e0) {
+        l_b += g_fullCircleDegrees;
     }
-    if (std::abs(m_bearing - b) < 1.0e-6) {
+    if (::std::abs(m_bearing - l_b) < g_epsilon) {
         return;
     }
-    m_bearing = b;
+    m_bearing = l_b;
     emit bearingChanged();
 }
 
@@ -33,18 +42,20 @@ double Target::range() const {
     return m_range;
 }
 
-void Target::setRange(double r) {
-    if (std::isnan(r) || std::isinf(r)) {
+void Target::setRange(double l_r) {
+    if (::std::isnan(l_r) || ::std::isinf(l_r)) {
         return;
     }
-    const double clamped{std::clamp(r, 0.0e0, 1.0e0)};
-    if (std::abs(m_range - clamped) < 1.0e-6) {
+    const double l_clamped{::std::clamp(l_r, g_minRange, g_maxRange)};
+    if (::std::abs(m_range - l_clamped) < g_epsilon) {
         return;
     }
-    m_range = clamped;
+    m_range = l_clamped;
     emit rangeChanged();
 }
 
-std::int32_t Target::id() const {
+::std::int32_t Target::id() const {
     return m_id;
 }
+
+} // namespace model
