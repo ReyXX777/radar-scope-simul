@@ -1,24 +1,27 @@
 #include "Rc.h"
+#include "model/Rm.h"
 
 #include <cmath>
 #include <cstdint>
 
+namespace controller {
+
 namespace {
-    constexpr std::int32_t kTimerIntervalMs{static_cast<std::int32_t>(1.6e1)};
-    constexpr double kSecToMs{1.0e3};
-    constexpr double kDegPerRpmSec{6.0e0};
+    constexpr ::std::int32_t g_timerIntervalMs{static_cast<::std::int32_t>(1.6e1)};
+    constexpr double g_secToMs{1.0e3};
+    constexpr double g_degPerRpmSec{6.0e0};
 }
 
-RadarController::RadarController(QObject *parent)
-    : QObject{parent}
+RadarController::RadarController(::QObject *l_parent)
+    : ::QObject{l_parent}
     , m_timer{}
     , m_elapsed{} {
-    connect(&m_timer, &QTimer::timeout, this, &RadarController::onTick);
-    m_timer.setInterval(kTimerIntervalMs);
+    ::QObject::connect(&m_timer, &QTimer::timeout, this, &RadarController::onTick);
+    m_timer.setInterval(g_timerIntervalMs);
 }
 
-void RadarController::setModel(RadarModel *model) {
-    m_model = model;
+void RadarController::setModel(::model::RadarModel *l_model) {
+    m_model = l_model;
 }
 
 void RadarController::start() {
@@ -32,32 +35,34 @@ void RadarController::onTick() {
         return;
     }
 
-    const std::int64_t elapsedMs{m_elapsed.restart()};
-    const double dt{static_cast<double>(elapsedMs) / kSecToMs};
-    const double degreesPerSecond{m_rpm * kDegPerRpmSec};
-    const double newAngle{m_model->sweepAngle() + (degreesPerSecond * dt)};
-    m_model->setSweepAngle(newAngle);
+    const ::std::int64_t l_elapsedMs{m_elapsed.restart()};
+    const double l_dt{static_cast<double>(l_elapsedMs) / g_secToMs};
+    const double l_degreesPerSecond{m_rpm * g_degPerRpmSec};
+    const double l_newAngle{m_model->sweepAngle() + (l_degreesPerSecond * l_dt)};
+    m_model->setSweepAngle(l_newAngle);
 
-    const double prevAngle{newAngle - (degreesPerSecond * dt)};
+    const double l_prevAngle{l_newAngle - (l_degreesPerSecond * l_dt)};
 
-    for (const auto *target : m_model->rawTargetList()) {
-        if (!target) {
+    for (const auto *l_target : m_model->rawTargetList()) {
+        if (!l_target) {
             continue;
         }
 
-        const double tb{target->bearing()};
-        bool crossed{false};
+        const double l_tb{l_target->bearing()};
+        bool l_crossed{false};
 
-        if (prevAngle <= tb && newAngle > tb) {
-            crossed = true;
+        if (l_prevAngle <= l_tb && l_newAngle > l_tb) {
+            l_crossed = true;
         }
-        if (prevAngle > newAngle && (tb >= prevAngle || tb <= newAngle)) {
-            crossed = true;
+        if (l_prevAngle > l_newAngle && (l_tb >= l_prevAngle || l_tb <= l_newAngle)) {
+            l_crossed = true;
         }
 
-        if (crossed) {
-            const std::int32_t targetId{static_cast<std::int32_t>(target->id())};
-            emit m_model->targetPing(targetId);
+        if (l_crossed) {
+            const ::std::int32_t l_targetId{static_cast<::std::int32_t>(l_target->id())};
+            emit m_model->targetPing(l_targetId);
         }
     }
 }
+
+} // namespace controller
