@@ -5,25 +5,32 @@
 #include <cstdint>
 #include <limits>
 
-RadarModel::RadarModel(QObject *parent)
-    : QObject{parent} {}
+namespace model {
+
+namespace {
+    constexpr double g_fullCircleDegrees{3.6e2};
+    constexpr double g_angleEpsilon{1.0e-6};
+}
+
+RadarModel::RadarModel(::QObject *l_parent)
+    : ::QObject{l_parent} {}
 
 double RadarModel::sweepAngle() const {
     return m_sweepAngle;
 }
 
-void RadarModel::setSweepAngle(double angle) {
-    if (std::isnan(angle) || std::isinf(angle)) {
+void RadarModel::setSweepAngle(double l_angle) {
+    if (::std::isnan(l_angle) || ::std::isinf(l_angle)) {
         return;
     }
-    angle = std::fmod(angle, 3.6e2);
-    if (angle < 0.0e0) {
-        angle += 3.6e2;
+    l_angle = ::std::fmod(l_angle, g_fullCircleDegrees);
+    if (l_angle < 0.0e0) {
+        l_angle += g_fullCircleDegrees;
     }
-    if (std::abs(m_sweepAngle - angle) < 1.0e-6) {
+    if (::std::abs(m_sweepAngle - l_angle) < g_angleEpsilon) {
         return;
     }
-    m_sweepAngle = angle;
+    m_sweepAngle = l_angle;
     emit sweepAngleChanged();
 }
 
@@ -38,64 +45,66 @@ QQmlListProperty<Target> RadarModel::targets() {
     };
 }
 
-const QList<Target*>& RadarModel::rawTargetList() const {
+const ::QList<Target*>& RadarModel::rawTargetList() const {
     return m_targets;
 }
 
-void RadarModel::addTarget(Target *t) {
-    if (t && !m_targets.contains(t)) {
-        m_targets.append(t);
-        t->setParent(this);
+void RadarModel::addTarget(Target *l_t) {
+    if (l_t && !m_targets.contains(l_t)) {
+        m_targets.append(l_t);
+        l_t->setParent(this);
         emit targetsChanged();
     }
 }
 
-void RadarModel::appendTarget(QQmlListProperty<Target> *list, Target *t) {
-    if (!list) {
+void RadarModel::appendTarget(QQmlListProperty<Target> *l_list, Target *l_t) {
+    if (!l_list) {
         return;
     }
-    auto *model{qobject_cast<RadarModel *>(list->object)};
-    if (model) {
-        model->addTarget(t);
+    auto *l_model{::qobject_cast<RadarModel *>(l_list->object)};
+    if (l_model) {
+        l_model->addTarget(l_t);
     }
 }
 
-int RadarModel::targetCount(QQmlListProperty<Target> *list) {
-    if (!list) {
+int RadarModel::targetCount(QQmlListProperty<Target> *l_list) {
+    if (!l_list) {
         return static_cast<int>(0.0e0);
     }
-    const auto *model{qobject_cast<const RadarModel *>(list->object)};
-    if (!model) {
+    const auto *l_model{::qobject_cast<const RadarModel *>(l_list->object)};
+    if (!l_model) {
         return static_cast<int>(0.0e0);
     }
-    const auto size{model->m_targets.size()};
-    if (size > static_cast<decltype(size)>(std::numeric_limits<int>::max())) {
-        return std::numeric_limits<int>::max();
+    const auto l_size{l_model->m_targets.size()};
+    if (l_size > static_cast<decltype(l_size)>(::std::numeric_limits<int>::max())) {
+        return ::std::numeric_limits<int>::max();
     }
-    return static_cast<int>(size);
+    return static_cast<int>(l_size);
 }
 
-Target *RadarModel::targetAt(QQmlListProperty<Target> *list, int index) {
-    if (!list || index < static_cast<int>(0.0e0)) {
+Target *RadarModel::targetAt(QQmlListProperty<Target> *l_list, int l_index) {
+    if (!l_list || l_index < static_cast<int>(0.0e0)) {
         return nullptr;
     }
-    auto *model{qobject_cast<RadarModel *>(list->object)};
-    if (model && static_cast<std::size_t>(index) < static_cast<std::size_t>(model->m_targets.size())) {
-        return model->m_targets.at(index);
+    auto *l_model{::qobject_cast<RadarModel *>(l_list->object)};
+    if (l_model && static_cast<::std::size_t>(l_index) < static_cast<::std::size_t>(l_model->m_targets.size())) {
+        return l_model->m_targets.at(l_index);
     }
     return nullptr;
 }
 
 QVariantList RadarModel::targetList() const {
-    QVariantList list{};
-    const auto size{m_targets.size()};
-    if (size > static_cast<decltype(size)>(std::numeric_limits<int>::max())) {
-        list.reserve(std::numeric_limits<int>::max());
+    QVariantList l_list{};
+    const auto l_size{m_targets.size()};
+    if (l_size > static_cast<decltype(l_size)>(::std::numeric_limits<int>::max())) {
+        l_list.reserve(::std::numeric_limits<int>::max());
     } else {
-        list.reserve(static_cast<int>(size));
+        l_list.reserve(static_cast<int>(l_size));
     }
-    for (auto *target : m_targets) {
-        list.append(QVariant::fromValue(target));
+    for (auto *l_target : m_targets) {
+        l_list.append(::QVariant::fromValue(l_target));
     }
-    return list;
+    return l_list;
 }
+
+} // namespace model
